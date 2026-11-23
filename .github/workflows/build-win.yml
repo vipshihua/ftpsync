@@ -12,26 +12,32 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: 1.88
+          toolchain: stable
 
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: src-tauri -> target
 
+      - name: 环境诊断
+        run: |
+          node --version
+          npm --version
+          rustc --version
+          cargo --version
+
       - name: 安装 Tauri CLI
         run: npm install
 
       - name: 构建
-        run: npm run build
-        env:
-          TAURI_SIGNING_PRIVATE_KEY: ""
+        run: npm run build -- --verbose
 
       - name: 上传产物
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: FTPSync-windows-x64
           path: |
